@@ -2,20 +2,29 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5"
+
+	//_ "github.com/denisenkom/go-mssqldb"
 	"net/http"
 	"webApp/controller"
+	"webApp/initializers"
 )
 
+func init() {
+	initializers.LoadEnvVariables()
+	initializers.ConnectToDatabase()
+}
+
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/main", controller.HandleMain)
-	mux.HandleFunc("/login", controller.HandleLogin)
-	mux.HandleFunc("/login/user", controller.HandlePOST)
+	r := chi.NewRouter()
+	r.Get("/main", controller.HandleMain)
+	r.Get("/login", controller.HandleLogin)
+	r.Post("/login/user", controller.HandlePOST)
 
 	fileServer := http.FileServer(http.Dir("./view/staticFiles"))
-	mux.Handle("/static/", http.StripPrefix("/static", fileServer))
+	r.Handle("/static/", http.StripPrefix("/static", fileServer))
 
-	err := http.ListenAndServe(":5050", mux)
+	err := http.ListenAndServe(":5050", r)
 	if err != nil {
 		fmt.Printf("Ошибка запуска сервера: %s\n", err.Error())
 		return
