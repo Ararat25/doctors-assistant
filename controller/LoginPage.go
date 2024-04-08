@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func HandleLogin(res http.ResponseWriter, req *http.Request) {
+func LoginPage(res http.ResponseWriter, req *http.Request) {
 	// Используем функцию template.ParseFiles() для чтения файла шаблона
 	ts, err := template.ParseFiles("./view/login/page.tmpl")
 	if err != nil {

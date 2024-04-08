@@ -17,14 +17,14 @@ func init() {
 
 func main() {
 	r := chi.NewRouter()
-	r.Get("/main", controller.HandleMain)
-	r.Get("/login", controller.HandleLogin)
-	r.Post("/login/user", controller.HandlePOST)
+	r.Get("/main", controller.MainPage)
+	r.Get("/login", controller.LoginPage)
+	r.Post("/login/user", controller.LoginPOST)
 
 	fileServer := http.FileServer(http.Dir("./view/staticFiles"))
-	r.Handle("/static/", http.StripPrefix("/static", fileServer))
+	r.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
-	err := http.ListenAndServe(":5050", r)
+	err := http.ListenAndServe(":5500", r)
 	if err != nil {
 		fmt.Printf("Ошибка запуска сервера: %s\n", err.Error())
 		return

@@ -9,7 +9,6 @@
     <title>My App</title>
     <link href="/static/css/login.css" rel="stylesheet">
 
-    <script src="/static/js/login.js"></script>
   </head>
   <body class="text-center">
     <main class="form-signin">
@@ -24,9 +23,10 @@
           <input type="password" class="form-control" name="password" id="password" placeholder="Password">
           <label for="floatingPassword">Password</label>
         </div>
-
+        <div id = "status"></div>
         <button class="w-100 btn btn-lg btn-primary mt-3" type="submit" onclick="login()">Login</button>
       </form>
     </main>
+    <script src="/static/js/login.js"></script>
   </body>
 </html>

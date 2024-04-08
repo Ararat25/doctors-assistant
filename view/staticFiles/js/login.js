@@ -3,13 +3,43 @@ async function handleFormSubmit(event) {
     const response = await fetch('login/user', {
         method: 'POST',
         body: new FormData(loginForm),
-    });
+    })
 
     if (!response.ok) {
         throw new Error(`Ошибка по адресу 'login/user', статус ошибки ${response.status}`);
     }
-    loginForm.reset()
-    return await response.json();
+
+    if (response.status === 200) {
+        console.log("OK");
+        loginForm.reset();
+        return null
+    }
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const errorElement = document.getElementById('status');
+
+    if (response.status === 204) {
+        console.log("No content received");
+        errorElement.classList.add('text-danger');
+        errorElement.textContent = 'Неверный логин или пароль';
+
+        usernameInput.classList.add('is-invalid');
+        passwordInput.classList.add('is-invalid');
+
+        usernameInput.addEventListener('input', () => {
+            errorElement.remove();
+            usernameInput.classList.remove('is-invalid');
+            passwordInput.classList.remove('is-invalid');
+        });
+
+        passwordInput.addEventListener('input', () => {
+            errorElement.remove();
+            usernameInput.classList.remove('is-invalid');
+            passwordInput.classList.remove('is-invalid');
+        });
+        return null;
+    }
 }
 
 function login() {

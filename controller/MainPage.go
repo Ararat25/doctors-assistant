@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func HandleMain(res http.ResponseWriter, req *http.Request) {
+func MainPage(res http.ResponseWriter, req *http.Request) {
 	s := fmt.Sprintf("Method: %s\nHost: %s\nPath: %s",
 		req.Method, req.Host, req.URL.Path)
 	_, err := res.Write([]byte(s))
