@@ -10,7 +10,6 @@ async function handleFormSubmit(event) {
     }
 
     if (response.status === 200) {
-        console.log("OK");
         loginForm.reset();
         return null
     }
@@ -20,7 +19,6 @@ async function handleFormSubmit(event) {
     const errorElement = document.getElementById('status');
 
     if (response.status === 204) {
-        console.log("No content received");
         errorElement.classList.add('text-danger');
         errorElement.textContent = 'Неверный логин или пароль';
 
@@ -28,13 +26,13 @@ async function handleFormSubmit(event) {
         passwordInput.classList.add('is-invalid');
 
         usernameInput.addEventListener('input', () => {
-            errorElement.remove();
+            errorElement.textContent = "";
             usernameInput.classList.remove('is-invalid');
             passwordInput.classList.remove('is-invalid');
         });
 
         passwordInput.addEventListener('input', () => {
-            errorElement.remove();
+            errorElement.textContent = "";
             usernameInput.classList.remove('is-invalid');
             passwordInput.classList.remove('is-invalid');
         });

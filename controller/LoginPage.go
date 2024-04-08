@@ -8,7 +8,7 @@ import (
 
 func LoginPage(res http.ResponseWriter, req *http.Request) {
 	// Используем функцию template.ParseFiles() для чтения файла шаблона
-	ts, err := template.ParseFiles("./view/login/page.tmpl")
+	ts, err := template.ParseFiles("./view/loginPage/page.tmpl")
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(res, "Internal Server Error", 500)

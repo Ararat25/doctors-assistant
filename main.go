@@ -19,7 +19,9 @@ func main() {
 	r := chi.NewRouter()
 	r.Get("/main", controller.MainPage)
 	r.Get("/login", controller.LoginPage)
+	r.Get("/register", controller.RegisterPage)
 	r.Post("/login/user", controller.LoginPOST)
+	r.Post("/register/user", controller.RegisterPOST)
 
 	fileServer := http.FileServer(http.Dir("./view/staticFiles"))
 	r.Handle("/static/*", http.StripPrefix("/static", fileServer))

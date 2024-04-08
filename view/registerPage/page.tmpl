@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Регистрация</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/css/register.css" rel="stylesheet">
+    </head>
+    <body>
+    <main class="form-signin">
+        <div class="container mt-5">
+            <h1 class="text-center mb-4"><b>My App</b> - Регистрация</h1>
+            <form class="text-center" id = "registerForm">
+                <div class="row mb-3">
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Имя" name="firstName" id="firstName">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Фамилия" name="lastName" id="lastName">
+                    </div>
+                    <div class="col">
+                        <input type="text" class="form-control" placeholder="Отчество" name="middleName" id="middleName">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="specialty" id="specialty" list="specialties" placeholder="Специальность">
+                    <datalist id="specialties">
+                        <option value="Терапевт">
+                        <option value="Хирург">
+                        <option value="Офтальмолог">
+                        <option value="Стоматолог">
+                        <option value="Педиатор">
+                    </datalist>
+                </div>
+                <div class="mb-3">
+                    <input type="email" class="form-control" name="email" id="username" placeholder="Email">
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Пароль">
+                </div>
+                <div id = "status" style="padding-bottom: 10px"></div>
+                <button type="submit" class="btn btn-primary" onclick="register()">Зарегистрироваться</button>
+            </form>
+        </div>
+        <script src="/static/js/register.js"></script>
+    </main>
+    </body>
+</html>

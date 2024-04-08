@@ -6,9 +6,9 @@ import (
 	"net/http"
 )
 
-func MainPage(res http.ResponseWriter, req *http.Request) {
+func RegisterPage(res http.ResponseWriter, req *http.Request) {
 	// Используем функцию template.ParseFiles() для чтения файла шаблона
-	ts, err := template.ParseFiles("./view/mainPage/page.tmpl")
+	ts, err := template.ParseFiles("./view/registerPage/page.tmpl")
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(res, "Internal Server Error", 500)
