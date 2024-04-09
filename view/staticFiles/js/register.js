@@ -26,8 +26,8 @@ async function handleFormSubmit(event) {
     }
 
     if (response.status === 200) {
-        console.log("OK");
         registerForm.reset();
+        window.location.href = '/login';
         return null
     }
 }

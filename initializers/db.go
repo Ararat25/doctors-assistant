@@ -1,7 +1,6 @@
 package initializers
 
 import (
-	"fmt"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 	"log"
@@ -15,7 +14,7 @@ func ConnectToDatabase() {
 	dsn := os.Getenv("DB_URL")
 	DB, err = gorm.Open(sqlserver.Open(dsn), &gorm.Config{})
 	if err != nil {
-		fmt.Println("Ошибка подключения к SQL Server: ", err.Error())
+		log.Printf("Ошибка подключения к SQL Server: %s", err.Error())
 		return
 	}
 	log.Printf("Connected to Database: %s", DB.Name())
