@@ -9,7 +9,3 @@ type User struct {
 	MiddleName string `json:"middleName" gorm:"column:middleName"`
 	Specialty  string `json:"specialty" gorm:"column:specialty"`
 }
-
-func (user User) getEmail() string {
-	return user.Email
-}
