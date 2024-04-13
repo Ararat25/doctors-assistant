@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"net/http"
 	"webApp/initializers"
 	"webApp/model"
@@ -15,6 +17,10 @@ func RegisterPOST(res http.ResponseWriter, req *http.Request) {
 		MiddleName: req.PostFormValue("middleName"),
 		Specialty:  req.PostFormValue("specialty"),
 	}
+
+	hashPassword := sha256.Sum256([]byte(user.Password))
+	hashString := hex.EncodeToString(hashPassword[:])
+	user.Password = hashString
 
 	result := initializers.DB.Create(&user)
 	if result.Error != nil {

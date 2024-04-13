@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"gorm.io/gorm"
 	"net/http"
@@ -16,13 +18,16 @@ func LoginPOST(res http.ResponseWriter, req *http.Request) {
 
 	userFound := model.User{}
 
-	result := initializers.DB.Where("email = ?", user.Email).First(&userFound)
+	result := initializers.DB.Where(&model.User{Email: user.Email}).First(&userFound)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		http.Error(res, result.Error.Error(), http.StatusNoContent)
 		return
 	}
 
-	result = initializers.DB.Where("password = ?", user.Password).First(&userFound)
+	hashPassword := sha256.Sum256([]byte(user.Password))
+	hashString := hex.EncodeToString(hashPassword[:])
+
+	result = initializers.DB.Where(&model.User{Email: user.Email, Password: hashString}).First(&userFound)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		http.Error(res, result.Error.Error(), http.StatusUnauthorized)
 		return
