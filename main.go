@@ -20,7 +20,7 @@ func main() {
 	r.Get("/main", controller.MainPage)
 	r.Get("/login", controller.LoginPage)
 	r.Get("/register", controller.RegisterPage)
-	r.Get("/account", controller.AccountPage)
+	r.Post("/account", controller.AccountPage)
 	r.Post("/login/user", controller.LoginPOST)
 	r.Post("/register/user", controller.RegisterPOST)
 

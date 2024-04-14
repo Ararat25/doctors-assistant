@@ -1,26 +1,100 @@
 package controller
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"github.com/golang-jwt/jwt/v5"
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 )
 
-func AccountPage(res http.ResponseWriter, req *http.Request) {
-	// Используем функцию template.ParseFiles() для чтения файла шаблона
-	ts, err := template.ParseFiles("./view/accountPage/page.tmpl")
+type JSONBody struct {
+	Email       string `json:"email"`
+	AccessToken string `json:"accessToken"`
+}
+
+func VerifyUser(token string, email string) bool {
+	claims := jwt.MapClaims{}
+
+	jwtToken, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (interface{}, error) {
+		return Secret, nil
+	})
 	if err != nil {
-		log.Println(err.Error())
-		http.Error(res, "Internal Server Error", 500)
+		fmt.Printf("Failed to parse token: %s\n", err)
+		return false
+	}
+
+	if !jwtToken.Valid {
+		return false
+	}
+
+	emailRow, ok := claims["sub"]
+	if !ok {
+		return false
+	}
+
+	expRow, ok := claims["exp"]
+	if !ok {
+		return false
+	}
+
+	emailFromReq, ok := emailRow.(string)
+	if !ok {
+		return false
+	}
+
+	expFromReq, ok := expRow.(float64)
+	if !ok {
+		return false
+	}
+
+	if err != nil {
+		return false
+	}
+
+	if emailFromReq == email {
+		if time.Now().Unix() < int64(expFromReq) {
+			return true
+		}
+		return true
+	}
+	return false
+}
+
+func AccountPage(res http.ResponseWriter, req *http.Request) {
+	var jsonBody JSONBody
+	var buf bytes.Buffer
+
+	_, err := buf.ReadFrom(req.Body)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Затем мы используем метод Execute() для записи содержимого
-	// шаблона в тело HTTP ответа. Последний параметр в Execute() предоставляет
-	// возможность отправки динамических данных в шаблон.
-	err = ts.Execute(res, nil)
+	err = json.Unmarshal(buf.Bytes(), &jsonBody)
 	if err != nil {
-		log.Println(err.Error())
-		http.Error(res, "Internal Server Error", 500)
+		http.Error(res, err.Error(), http.StatusBadRequest)
+		return
 	}
+
+	if VerifyUser(jsonBody.AccessToken, jsonBody.Email) {
+		ts, err := template.ParseFiles("./view/accountPage/page.tmpl")
+		if err != nil {
+			log.Println(err.Error())
+			http.Error(res, "Internal Server Error", 500)
+			return
+		}
+
+		err = ts.Execute(res, nil)
+		if err != nil {
+			log.Println(err.Error())
+			http.Error(res, "Internal Server Error", 500)
+			return
+		}
+		return
+	}
+	http.Error(res, "Не валидный токен", http.StatusUnauthorized)
 }
