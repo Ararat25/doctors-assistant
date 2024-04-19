@@ -3,11 +3,15 @@ package main
 import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
-
-	//_ "github.com/denisenkom/go-mssqldb"
+	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
-	"webApp/controller"
+	"os"
+	"webApp/controller/account"
+	"webApp/controller/basic"
+	"webApp/controller/login"
+	"webApp/controller/register"
 	"webApp/initializers"
+	"webApp/model"
 )
 
 func init() {
@@ -17,12 +21,23 @@ func init() {
 
 func main() {
 	r := chi.NewRouter()
-	r.Get("/main", controller.MainPage)
-	r.Get("/login", controller.LoginPage)
-	r.Get("/register", controller.RegisterPage)
-	r.Post("/account", controller.AccountPage)
-	r.Post("/login/user", controller.LoginPOST)
-	r.Post("/register/user", controller.RegisterPOST)
+
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
+	authService := model.NewAuthService([]byte(os.Getenv("AUTH_SALT")), []byte(os.Getenv("TOKEN_SALT")))
+
+	loginHandler := login.NewHandler(authService)
+
+	r.Get("/main", basic.MainPage)
+	r.Get("/login", login.LoginPage)
+	r.Get("/register", register.RegisterPage)
+	r.Post("/account", account.AccountPage)
+
+	//r.Post("/login/user", controller.LoginPOST)
+	r.Method(http.MethodPost, "/login/user", loginHandler)
+
+	r.Post("/register/user", register.RegisterPOST)
 
 	fileServer := http.FileServer(http.Dir("./view/staticFiles"))
 	r.Handle("/static/*", http.StripPrefix("/static", fileServer))

@@ -1,4 +1,4 @@
-package controller
+package register
 
 import (
 	"html/template"

@@ -1,4 +1,4 @@
-package controller
+package login
 
 import (
 	"crypto/sha256"
@@ -8,18 +8,27 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 	"net/http"
+	"os"
 	"time"
 	"webApp/initializers"
 	"webApp/model"
 )
 
+type Handler struct {
+	authService *model.Service
+}
+
+func NewHandler(authService *model.Service) *Handler {
+	return &Handler{
+		authService: authService,
+	}
+}
+
 type LoginResponse struct {
 	AccessToken string `json:"accessToken"`
 }
 
-var Secret = []byte("iu24brf87b3eb2bui")
-
-func LoginPOST(res http.ResponseWriter, req *http.Request) {
+func (h *Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	user := model.User{
 		Email:    req.PostFormValue("email"),
 		Password: req.PostFormValue("password"),
@@ -49,14 +58,22 @@ func LoginPOST(res http.ResponseWriter, req *http.Request) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedToken, err := token.SignedString(Secret)
+	signedToken, err := token.SignedString([]byte(os.Getenv("TOKEN_SALT")))
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	jsonToken, err := json.Marshal(LoginResponse{AccessToken: signedToken})
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = h.authService.AuthUser(user.Email, user.Password)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	res.Header().Set("Content-Type", "application/json")
@@ -64,5 +81,6 @@ func LoginPOST(res http.ResponseWriter, req *http.Request) {
 	_, err = res.Write(jsonToken)
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
+		return
 	}
 }

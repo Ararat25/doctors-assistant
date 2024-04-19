@@ -1,4 +1,4 @@
-package controller
+package account
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -20,7 +21,7 @@ func VerifyUser(token string, email string) bool {
 	claims := jwt.MapClaims{}
 
 	jwtToken, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (interface{}, error) {
-		return Secret, nil
+		return []byte(os.Getenv("TOKEN_SALT")), nil
 	})
 	if err != nil {
 		fmt.Printf("Failed to parse token: %s\n", err)
@@ -59,7 +60,6 @@ func VerifyUser(token string, email string) bool {
 		if time.Now().Unix() < int64(expFromReq) {
 			return true
 		}
-		return true
 	}
 	return false
 }
