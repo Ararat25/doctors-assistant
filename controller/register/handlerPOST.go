@@ -1,14 +1,21 @@
 package register
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"net/http"
-	"webApp/initializers"
 	"webApp/model"
 )
 
-func RegisterPOST(res http.ResponseWriter, req *http.Request) {
+type Handler struct {
+	authService *model.Service
+}
+
+func NewHandler(authService *model.Service) *Handler {
+	return &Handler{
+		authService: authService,
+	}
+}
+
+func (h *Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	user := model.User{
 		Email:      req.PostFormValue("email"),
 		Password:   req.PostFormValue("password"),
@@ -18,13 +25,10 @@ func RegisterPOST(res http.ResponseWriter, req *http.Request) {
 		Specialty:  req.PostFormValue("specialty"),
 	}
 
-	hashPassword := sha256.Sum256([]byte(user.Password))
-	hashString := hex.EncodeToString(hashPassword[:])
-	user.Password = hashString
+	err := h.authService.RegisterUser(user.Email, user.Password, user.LastName, user.FirstName, user.MiddleName, user.Specialty)
 
-	result := initializers.DB.Create(&user)
-	if result.Error != nil {
-		http.Error(res, result.Error.Error(), http.StatusConflict)
+	if err != nil {
+		http.Error(res, err.Error(), http.StatusConflict)
 		return
 	}
 

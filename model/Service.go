@@ -11,13 +11,12 @@ import (
 	"time"
 	"webApp/custom_errors"
 	"webApp/initializers"
-	"webApp/model/auth/entity"
+	"webApp/model/entity"
 )
 
 type Service struct {
-	passwordSalt []byte
-	tokenSalt    []byte
-
+	passwordSalt    []byte
+	tokenSalt       []byte
 	accessTokenTTL  time.Duration
 	refreshTokenTTL time.Duration
 	userStorage     *gorm.DB
@@ -29,7 +28,8 @@ func NewAuthService(passwordSalt, tokenSalt []byte) *Service {
 		tokenSalt:       tokenSalt,
 		accessTokenTTL:  time.Minute,
 		refreshTokenTTL: 24 * time.Hour,
-		userStorage:     initializers.DB,
+		//refreshTokenTTL: time.Second * 15,
+		userStorage: initializers.DB,
 	}
 }
 
@@ -49,19 +49,14 @@ func (s *Service) RegisterUser(email, password, lastName, firstName, middleName,
 
 // AuthUser генерирует refresh и access токены для пользователя после входа в систему
 func (s *Service) AuthUser(email, password string) (entity.Tokens, error) {
-	user := &User{
-		Email:    email,
-		Password: password,
-	}
-
 	userFound := User{}
 
-	result := s.userStorage.Where(User{Email: user.Email}).First(&userFound)
+	result := s.userStorage.Where(User{Email: email}).First(&userFound)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return entity.Tokens{}, custom_errors.ErrNotFound
 	}
 
-	isPasswordCorrect := s.doPasswordsMatch(s.hashPassword(password), user.Password)
+	isPasswordCorrect := s.doPasswordsMatch(userFound.Password, password)
 	if !isPasswordCorrect {
 		return entity.Tokens{}, custom_errors.ErrIncorrectPassword
 	}
