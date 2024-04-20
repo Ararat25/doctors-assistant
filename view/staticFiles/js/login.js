@@ -11,18 +11,20 @@ async function handleFormSubmit(event) {
         const errorElement = document.getElementById('status');
 
         if (response.status === 200) {
+            console.log("11111")
             const response2 = await fetch('/account', {
                 method: 'GET',
             })
+            console.log("22222")
             loginForm.reset();
-
+            console.log(response2.status)
             if (response2.status === 200) {
                 window.location.href = '/account';
                 return null
             }
 
             if (!response2.ok) {
-                throw new Error(`Ошибка по адресу '/account', статус ошибки ${response2.status}`);
+                console.log(`Ошибка по адресу '/account', статус ошибки ${response2.status}`);
             }
             return null
         }

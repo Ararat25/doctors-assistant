@@ -35,6 +35,47 @@ func (a *AuthMiddleware) CheckToken(h http.Handler) http.Handler {
 
 		userLogin, err := a.authService.VerifyUser(accessToken.Value)
 		if err != nil {
+
+			// ------------------------------------------------------------------
+			fmt.Println(err.Error())
+
+			//client := &http.Client{}
+			//
+			//req, result := http.NewRequest("GET", "http://localhost:5500/refresh-token", nil)
+			//refreshToken1, _ := r.Cookie("refreshToken")
+			//req.AddCookie(accessToken)
+			//req.AddCookie(refreshToken1)
+			//
+			//if result != nil {
+			//	http.Error(w, result.Error(), http.StatusInternalServerError)
+			//	return
+			//}
+			//
+			//resp, err := client.Do(req)
+			//if err != nil {
+			//	http.Error(w, result.Error(), http.StatusInternalServerError)
+			//	return
+			//}
+			//
+			//var claims refreshToken.ResponseBody
+			//var buf bytes.Buffer
+			//_, err = buf.ReadFrom(resp.Body)
+			//if err != nil {
+			//	http.Error(w, err.Error(), http.StatusBadRequest)
+			//	return
+			//}
+			//err = json.Unmarshal(buf.Bytes(), &claims)
+			//if err != nil {
+			//	http.Error(w, err.Error(), http.StatusBadRequest)
+			//	return
+			//}
+			//
+			//if claims.Status == true {
+			//	return
+			//}
+
+			// --------------------------------------------------------------------
+
 			w.WriteHeader(http.StatusUnauthorized)
 			apiError, _ := json.Marshal(custom_errors.ApiError{Message: err.Error()})
 			_, err = w.Write(apiError)

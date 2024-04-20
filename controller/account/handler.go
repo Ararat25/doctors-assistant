@@ -7,7 +7,7 @@ import (
 )
 
 func Page(res http.ResponseWriter, req *http.Request) {
-	ts, err := template.ParseFiles("./view/accountPage/page.tmpl")
+	ts, err := template.ParseFiles("./view/account/page.tmpl")
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(res, "Internal Server Error", 500)

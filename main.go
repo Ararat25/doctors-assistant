@@ -24,15 +24,15 @@ func init() {
 func main() {
 	r := chi.NewRouter()
 
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-
 	authService := model.NewAuthService([]byte(os.Getenv("AUTH_SALT")), []byte(os.Getenv("TOKEN_SALT")))
 	authMiddleware := myMiddleware.NewAuthMiddleware(authService)
 
 	loginHandler := login.NewHandler(authService)
 	registerHandler := register.NewHandler(authService)
 	refreshTokenHandler := refreshToken.NewHandler(authService)
+
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
 	r.Group(func(r chi.Router) {
 		r.Use(authMiddleware.CheckToken)
