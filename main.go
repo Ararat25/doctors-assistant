@@ -36,7 +36,7 @@ func main() {
 
 	r.Group(func(r chi.Router) {
 		r.Use(authMiddleware.CheckToken)
-		r.Get("/account", account.Page)
+		r.Get("/account/user", account.Page)
 	})
 
 	r.Method(http.MethodPost, "/login/user", loginHandler)

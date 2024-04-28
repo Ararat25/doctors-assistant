@@ -48,35 +48,35 @@ func (s *Service) RegisterUser(email, password, lastName, firstName, middleName,
 }
 
 // AuthUser генерирует refresh и access токены для пользователя после входа в систему
-func (s *Service) AuthUser(email, password string) (entity.Tokens, error) {
+func (s *Service) AuthUser(email, password string) (int, entity.Tokens, error) {
 	userFound := User{}
 
 	result := s.userStorage.Where(User{Email: email}).First(&userFound)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return entity.Tokens{}, custom_errors.ErrNotFound
+		return -1, entity.Tokens{}, custom_errors.ErrNotFound
 	}
 
 	isPasswordCorrect := s.doPasswordsMatch(userFound.Password, password)
 	if !isPasswordCorrect {
-		return entity.Tokens{}, custom_errors.ErrIncorrectPassword
+		return -1, entity.Tokens{}, custom_errors.ErrIncorrectPassword
 	}
 
 	tokens, err := s.generateTokens(email)
 	if err != nil {
-		return tokens, err
+		return -1, tokens, err
 	}
 
-	return tokens, nil
+	return userFound.Id, tokens, nil
 }
 
 // VerifyUser верифицирует пользователя по access токену
 func (s *Service) VerifyUser(token string) (string, error) {
 	claims := &entity.AuthClaims{}
 	parsedToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		_, ok := token.Method.(*jwt.SigningMethodHMAC)
+		if !ok {
 			return nil, fmt.Errorf("incorrect method")
 		}
-
 		return s.tokenSalt, nil
 	})
 	if err != nil || !parsedToken.Valid {

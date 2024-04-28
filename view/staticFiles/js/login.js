@@ -11,20 +11,25 @@ async function handleFormSubmit(event) {
         const errorElement = document.getElementById('status');
 
         if (response.status === 200) {
-            console.log("11111")
-            const response2 = await fetch('/account', {
+            let id
+            await response.json().then(data => {
+                id = data['id']
+            })
+            let curUrl = new URL(location.href)
+            let addr = new URL(curUrl.origin + '/account/user')
+            addr.searchParams.set("user", id)
+            const response2 = await fetch(addr, {
                 method: 'GET',
             })
-            console.log("22222")
             loginForm.reset();
             console.log(response2.status)
             if (response2.status === 200) {
-                window.location.href = '/account';
+                window.location.href = addr;
                 return null
             }
 
             if (!response2.ok) {
-                console.log(`Ошибка по адресу '/account', статус ошибки ${response2.status}`);
+                console.log(`Ошибка по адресу ${addr}, статус ошибки ${response2.status}`);
             }
             return null
         }

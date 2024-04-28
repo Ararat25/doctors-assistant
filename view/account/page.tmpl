@@ -8,20 +8,28 @@
   <link href="/static/css/account.css" rel="stylesheet">
   <link rel="icon" href="/static/img/logo.svg" type="image/x-icon">
 </head>
-<body>
+  <body>
+    <!-- Верхняя панель -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <div class="d-flex align-items-center">
+          <a href="/main" class="navbar-brand">
+            <img src="/static/img/logo.png" class="logo me-2" alt="Логотип">
+          </a>
+          <span class="mx-2">Virtual Doctor's Assistant</span>
+        </div>
 
-  <!-- Верхняя панель -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <a href = "/main"><img src="/static/img/logo.png" class = "logo"></img></a>
+        <div class="d-flex">
+          <a href="#"><button class="btn btn-outline-primary me-2" type="button">Выйти</button></a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Контент страницы -->
+    <div class="container mt-4">
+      <h1>Ваш аккаунт</h1>
+      <p>Дополнительный контент страницы...</p>
     </div>
-  </nav>
-
-  <!-- Контент страницы -->
-  <div class="container mt-4">
-    <h1>Ваш аккаунт</h1>
-    <p>Дополнительный контент страницы...</p>
-  </div>
-<script src="/static/js/account.js"></script>
-</body>
+  <script src="/static/js/account.js"></script>
+  </body>
 </html>

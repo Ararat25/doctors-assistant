@@ -20,6 +20,7 @@ func NewHandler(authService *model.Service) *Handler {
 
 type ResponseBody struct {
 	Status bool `json:"status"`
+	Id     int  `json:"id"`
 }
 
 func (h *Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
@@ -28,7 +29,7 @@ func (h *Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		Password: req.PostFormValue("password"),
 	}
 
-	tokens, err := h.authService.AuthUser(user.Email, user.Password)
+	id, tokens, err := h.authService.AuthUser(user.Email, user.Password)
 	if err != nil {
 		if errors.Is(err, custom_errors.ErrNotFound) {
 			res.WriteHeader(http.StatusNoContent)
@@ -63,7 +64,8 @@ func (h *Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "application/json")
 	res.WriteHeader(http.StatusOK)
-	response, _ := json.Marshal(ResponseBody{Status: true})
+
+	response, _ := json.Marshal(ResponseBody{Status: true, Id: id})
 	_, err = res.Write(response)
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
