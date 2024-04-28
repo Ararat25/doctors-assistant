@@ -3,11 +3,17 @@ package main
 import (
 	"fmt"
 	"github.com/go-chi/chi/v5"
-
-	//_ "github.com/denisenkom/go-mssqldb"
+	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
-	"webApp/controller"
+	"os"
+	"webApp/controller/account"
+	"webApp/controller/basic"
+	"webApp/controller/login"
+	"webApp/controller/refreshToken"
+	"webApp/controller/register"
 	"webApp/initializers"
+	"webApp/model"
+	myMiddleware "webApp/model/middleware"
 )
 
 func init() {
@@ -17,12 +23,29 @@ func init() {
 
 func main() {
 	r := chi.NewRouter()
-	r.Get("/main", controller.MainPage)
-	r.Get("/login", controller.LoginPage)
-	r.Get("/register", controller.RegisterPage)
-	r.Post("/account", controller.AccountPage)
-	r.Post("/login/user", controller.LoginPOST)
-	r.Post("/register/user", controller.RegisterPOST)
+
+	authService := model.NewAuthService([]byte(os.Getenv("AUTH_SALT")), []byte(os.Getenv("TOKEN_SALT")))
+	authMiddleware := myMiddleware.NewAuthMiddleware(authService)
+
+	loginHandler := login.NewHandler(authService)
+	registerHandler := register.NewHandler(authService)
+	refreshTokenHandler := refreshToken.NewHandler(authService)
+
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
+	r.Group(func(r chi.Router) {
+		r.Use(authMiddleware.CheckToken)
+		r.Get("/account/user", account.Page)
+	})
+
+	r.Method(http.MethodPost, "/login/user", loginHandler)
+	r.Method(http.MethodPost, "/register/user", registerHandler)
+	r.Method(http.MethodGet, "/refresh-token", refreshTokenHandler)
+
+	r.Get("/main", basic.Page)
+	r.Get("/login", login.Page)
+	r.Get("/register", register.Page)
 
 	fileServer := http.FileServer(http.Dir("./view/staticFiles"))
 	r.Handle("/static/*", http.StripPrefix("/static", fileServer))
