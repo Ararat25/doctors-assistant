@@ -11,7 +11,7 @@ async function check() {
                     }).then((respRefreshToken) => {
                         if (!respRefreshToken.ok) {
                             respRefreshToken.text().then(text => {
-                                alert(text)
+                                alert("Время вашего сеанса истекло")
                                 window.location.href = '/login';
                             })
                         }

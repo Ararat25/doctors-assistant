@@ -19,8 +19,8 @@ func NewHandler(authService *model.Service) *Handler {
 }
 
 type ResponseBody struct {
-	Status bool `json:"status"`
-	Id     int  `json:"id"`
+	Status bool   `json:"status"`
+	Id     string `json:"id"`
 }
 
 func (h *Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {

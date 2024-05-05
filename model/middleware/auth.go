@@ -8,7 +8,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"strconv"
 	"webApp/custom_errors"
 	"webApp/initializers"
 	"webApp/model"
@@ -51,7 +50,7 @@ func (a *AuthMiddleware) CheckToken(h http.Handler) http.Handler {
 			return
 		}
 
-		id, _ := strconv.Atoi(r.URL.Query().Get("user"))
+		id := r.URL.Query().Get("user")
 
 		userFound := model.User{}
 		result := initializers.DB.Where(&model.User{Id: id, Email: userLogin}).First(&userFound)

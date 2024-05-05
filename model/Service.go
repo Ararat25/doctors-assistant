@@ -37,7 +37,15 @@ func NewAuthService(passwordSalt, tokenSalt []byte) *Service {
 func (s *Service) RegisterUser(email, password, lastName, firstName, middleName, specialty string) error {
 	passwordHash := s.hashPassword(password)
 
-	user := NewUser(email, passwordHash, lastName, firstName, middleName, specialty)
+	user := User{
+		Id:         uuid.NewString(),
+		Email:      email,
+		Password:   passwordHash,
+		LastName:   lastName,
+		FirstName:  firstName,
+		MiddleName: middleName,
+		Specialty:  specialty,
+	}
 
 	result := s.userStorage.Create(&user)
 	if result.Error != nil {
@@ -48,22 +56,22 @@ func (s *Service) RegisterUser(email, password, lastName, firstName, middleName,
 }
 
 // AuthUser генерирует refresh и access токены для пользователя после входа в систему
-func (s *Service) AuthUser(email, password string) (int, entity.Tokens, error) {
+func (s *Service) AuthUser(email, password string) (string, entity.Tokens, error) {
 	userFound := User{}
 
 	result := s.userStorage.Where(User{Email: email}).First(&userFound)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return -1, entity.Tokens{}, custom_errors.ErrNotFound
+		return "-1", entity.Tokens{}, custom_errors.ErrNotFound
 	}
 
 	isPasswordCorrect := s.doPasswordsMatch(userFound.Password, password)
 	if !isPasswordCorrect {
-		return -1, entity.Tokens{}, custom_errors.ErrIncorrectPassword
+		return "-1", entity.Tokens{}, custom_errors.ErrIncorrectPassword
 	}
 
 	tokens, err := s.generateTokens(email)
 	if err != nil {
-		return -1, tokens, err
+		return "-1", tokens, err
 	}
 
 	return userFound.Id, tokens, nil
