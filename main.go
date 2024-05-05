@@ -9,6 +9,7 @@ import (
 	"webApp/controller/account"
 	"webApp/controller/basic"
 	"webApp/controller/login"
+	"webApp/controller/logout"
 	"webApp/controller/refreshToken"
 	"webApp/controller/register"
 	"webApp/initializers"
@@ -46,6 +47,7 @@ func main() {
 	r.Get("/main", basic.Page)
 	r.Get("/login", login.Page)
 	r.Get("/register", register.Page)
+	r.Get("/logout", logout.Handler)
 
 	fileServer := http.FileServer(http.Dir("./view/staticFiles"))
 	r.Handle("/static/*", http.StripPrefix("/static", fileServer))

@@ -56,12 +56,6 @@ func (a *AuthMiddleware) CheckToken(h http.Handler) http.Handler {
 		result := initializers.DB.Where(&model.User{Id: id, Email: userLogin}).First(&userFound)
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			w.WriteHeader(http.StatusUnauthorized)
-			//apiError, _ := json.Marshal(custom_errors.ApiError{Message: "Not available"})
-			//_, err = w.Write(apiError)
-			//if err != nil {
-			//	http.Error(w, err.Error(), http.StatusInternalServerError)
-			//	return
-			//}
 
 			ts, err := template.ParseFiles("./view/error/notAvailable.tmpl")
 			if err != nil {

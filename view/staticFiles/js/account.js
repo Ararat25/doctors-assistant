@@ -1,4 +1,4 @@
-async function check() {
+function check() {
     try {
         let param = new URL(location.href)
         let addr = new URL(param.origin + "/account/user")
@@ -31,4 +31,23 @@ async function check() {
         console.log(e)
     }
 }
-setInterval(check, 1000*59)
+
+function logout() {
+    try {
+        let param = new URL(location.href)
+        let addr = new URL(param.origin + "/logout")
+        addr.searchParams.set("user", param.searchParams.get("user"))
+        fetch(addr, {method: 'Get'})
+            .then(res => {
+                if (res.ok) {
+                    document.location.href = '/main'
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+    catch (e) {
+        console.log(e)
+    }
+}
