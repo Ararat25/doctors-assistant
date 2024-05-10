@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"webApp/controller/account"
+	"webApp/controller/assistant"
 	"webApp/controller/basic"
 	"webApp/controller/login"
 	"webApp/controller/logout"
@@ -38,6 +39,7 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(authMiddleware.CheckToken)
 		r.Get("/account/user", account.Page)
+		r.Post("/account/assistant/message", assistant.Message)
 	})
 
 	r.Method(http.MethodPost, "/login/user", loginHandler)

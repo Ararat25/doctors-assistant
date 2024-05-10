@@ -35,3 +35,73 @@ html, body {
 .mx-2 {
     font-size: large;
 }
+
+.card {
+    cursor: pointer;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    text-align: center;
+    transition: transform cubic-in-out 500ms, box-shadow cubic-in-out 400ms;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: scale(1.03)  translateZ(0);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+    overflow: hidden;
+}
+
+.card:hover .card-body {
+    overflow: visible;
+}
+
+
+.card-title {
+    color: #28507a;
+    font-size: 17px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-title.expanded {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: initial;
+}
+
+#diagnosisList {
+    height: 250px;
+    border: 1px solid #000;
+    overflow: auto;
+    padding: 10px;
+    border: 1px solid #ced4da;
+}
+
+.form-label {
+    color: #007bff;
+    margin-top: 24px;
+}
+
+.container {
+    width: 1000px;
+    margin-top: 0 !important;
+}
+
+/*.content {*/
+/*    background-color: #ffffff;*/
+/*    !*background-image: url("/static/img/backgr.jpg");*!*/
+/*    !*background-size: cover;*!*/
+/*}*/
+
+#symptomInput {
+    border-radius: 5px;
+    padding: 8px;
+}

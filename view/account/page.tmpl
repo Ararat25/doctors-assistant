@@ -8,10 +8,11 @@
   <link href="/static/css/account.css" rel="stylesheet">
   <link rel="icon" href="/static/img/logo.svg" type="image/x-icon">
 </head>
-  <body>
+<body>
   <script>
     setInterval(function () {check()}, 1000*60)
   </script>
+  <main>
     <!-- Верхняя панель -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
@@ -29,10 +30,41 @@
     </nav>
 
     <!-- Контент страницы -->
-    <div class="container mt-4">
-      <h1>Ваш аккаунт</h1>
-      <p>Дополнительный контент страницы...</p>
+    <div class="content">
+      <div class="container mt-4">
+        <!-- Поле для ввода символов -->
+        <div class="inp mb-3">
+          <label for="symptomInput" class="form-label" style="font-size: large;">Введите симптомы:</label>
+          <div class="input-group mb-3">
+
+            <input type="text" class="form-control" id="symptomInput">
+            <button class="btn btn-primary" type="button" onclick="submitSymptoms()">Отправить</button>
+          </div>
+        </div>
+
+        <!-- Окно для отображения ответа -->
+        <div id="diagnosisWindow" class="mb-3">
+          <label for="symptomInput" class="form-label" style="font-size: large;">Ответ:</label>
+          <div id="diagnosisList" class="form-control"></div>
+        </div>
+
+        <!-- Строка для поиска симптомов -->
+        <div class="mb-3">
+          <label for="filterInput" class="form-label">Фильтровать симптомы:</label>
+          <input type="text" class="form-control" id="filterInput">
+        </div>
+        <div id="symptomExamples" class="row row-cols-5">
+          <!-- Блоки с примерами симптомов будут добавлены программно -->
+        </div>
+      </div>
     </div>
-  <script src="/static/js/account.js"></script>
-  </body>
+    <script src="/static/js/account.js"></script>
+  </main>
+  <!-- Подвал страницы -->
+  <footer class="footer py-3 bg-light mt-auto">
+    <div class="container">
+      <span class="text-muted">© 2024 Виртуальный помощник врача</span>
+    </div>
+  </footer>
+</body>
 </html>
