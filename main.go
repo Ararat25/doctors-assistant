@@ -32,6 +32,7 @@ func main() {
 	loginHandler := login.NewHandler(authService)
 	registerHandler := register.NewHandler(authService)
 	refreshTokenHandler := refreshToken.NewHandler(authService)
+	assistantHandler := assistant.NewHandler(authService)
 
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
@@ -39,7 +40,7 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(authMiddleware.CheckToken)
 		r.Get("/account/user", account.Page)
-		r.Post("/account/assistant/message", assistant.Message)
+		r.Method(http.MethodPost, "/account/assistant/message", assistantHandler)
 	})
 
 	r.Method(http.MethodPost, "/login/user", loginHandler)

@@ -35,3 +35,10 @@ html, body {
 .mx-2 {
     font-size: large;
 }
+
+.img-fluid {
+    max-width: 253px !important;
+    max-height: 253px !important;
+    min-width: 174px !important;
+    min-height: 174px !important;
+}

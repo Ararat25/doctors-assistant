@@ -3,7 +3,6 @@ package middleware
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gorm.io/gorm"
 	"html/template"
 	"log"
@@ -74,7 +73,6 @@ func (a *AuthMiddleware) CheckToken(h http.Handler) http.Handler {
 			return
 		}
 
-		fmt.Printf("Пользователь %s - сделал запрос %s\n", userLogin, r.URL.Path)
 		h.ServeHTTP(w, r)
 	}
 

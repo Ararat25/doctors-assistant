@@ -4,15 +4,32 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/paulrzcz/go-gigachat"
+	"gorm.io/gorm"
 	"net/http"
+	"os"
+	"time"
+	"webApp/model"
+	"webApp/model/entity"
 )
+
+type Handler struct {
+	authService *model.Service
+}
+
+func NewHandler(authService *model.Service) *Handler {
+	return &Handler{
+		authService: authService,
+	}
+}
 
 type reqBody struct {
 	Symptoms string
 }
 
-func Message(res http.ResponseWriter, req *http.Request) {
+func (h *Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	jsonBody := reqBody{}
 	var buf bytes.Buffer
 	_, err := buf.ReadFrom(req.Body)
@@ -22,18 +39,47 @@ func Message(res http.ResponseWriter, req *http.Request) {
 	}
 	err = json.Unmarshal(buf.Bytes(), &jsonBody)
 
-	client, err := gigachat.NewInsecureClient("db776111-488b-49ba-824d-cffe95fbb275", "32875984-754b-4254-9d07-75f945707edf")
+	client, err := gigachat.NewInsecureClient(os.Getenv("CLIENT_ID"), os.Getenv("CLIENT_SECRET"))
 
 	if err != nil {
 		http.Error(res, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = client.Auth()
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+	tokenFound := entity.Apichats{}
+	result := h.authService.Storage.Model(&entity.Apichats{}).Where(entity.Apichats{Name: "gigaChat"}).First(&tokenFound)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		http.Error(res, "InternalServerError", http.StatusInternalServerError)
 		return
 	}
+
+	if tokenFound.Token == "" {
+		err = client.Auth()
+		if err != nil {
+			http.Error(res, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		result := h.authService.Storage.Model(&entity.Apichats{}).Where(entity.Apichats{Name: "gigaChat"}).Update("token", client.Token)
+		if result.Error != nil {
+			http.Error(res, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		result = h.authService.Storage.Model(&entity.Apichats{}).Where(entity.Apichats{Name: "gigaChat"}).Update("expiresAt", client.ExpiresAt)
+		if result.Error != nil {
+			http.Error(res, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		if tokenFound.ExpiresAt > int(time.Now().Unix()) {
+			err = client.Auth()
+			if err != nil {
+				http.Error(res, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+	}
+
+	fmt.Println(*client.ExpiresAt)
 
 	msg := []gigachat.Message{
 		{

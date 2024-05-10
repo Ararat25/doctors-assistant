@@ -19,17 +19,17 @@ type Service struct {
 	tokenSalt       []byte
 	accessTokenTTL  time.Duration
 	refreshTokenTTL time.Duration
-	userStorage     *gorm.DB
+	Storage         *gorm.DB
 }
 
 func NewAuthService(passwordSalt, tokenSalt []byte) *Service {
 	return &Service{
 		passwordSalt:    passwordSalt,
 		tokenSalt:       tokenSalt,
-		accessTokenTTL:  time.Minute,
+		accessTokenTTL:  time.Minute * 30,
 		refreshTokenTTL: 24 * time.Hour,
 		//refreshTokenTTL: time.Second * 15,
-		userStorage: initializers.DB,
+		Storage: initializers.DB,
 	}
 }
 
@@ -47,7 +47,7 @@ func (s *Service) RegisterUser(email, password, lastName, firstName, middleName,
 		Specialty:  specialty,
 	}
 
-	result := s.userStorage.Create(&user)
+	result := s.Storage.Create(&user)
 	if result.Error != nil {
 		return custom_errors.ErrUserAlreadyExists
 	}
@@ -59,7 +59,7 @@ func (s *Service) RegisterUser(email, password, lastName, firstName, middleName,
 func (s *Service) AuthUser(email, password string) (string, entity.Tokens, error) {
 	userFound := User{}
 
-	result := s.userStorage.Where(User{Email: email}).First(&userFound)
+	result := s.Storage.Where(User{Email: email}).First(&userFound)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return "-1", entity.Tokens{}, custom_errors.ErrNotFound
 	}
@@ -141,7 +141,7 @@ func (s *Service) generateTokens(login string) (entity.Tokens, error) {
 		return entity.Tokens{}, err
 	}
 
-	res := s.userStorage.Model(&User{}).Where(User{Email: login}).Update("accessTokenID", accessTokenID)
+	res := s.Storage.Model(&User{}).Where(User{Email: login}).Update("accessTokenID", accessTokenID)
 	if res.Error != nil {
 		return entity.Tokens{}, res.Error
 	}
