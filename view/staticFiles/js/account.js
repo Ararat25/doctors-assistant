@@ -1,5 +1,5 @@
 check()
-setInterval(check, 1000*60)
+setInterval(check, 1000*60*30)
 
 function check() {
     try {
@@ -157,18 +157,20 @@ document.getElementById("filterInput").addEventListener("input", function() {
 // Начальное отображение примеров симптомов
 displaySymptomExamples(symptomExamples);
 
-function submitSymptoms() {
+async function submitSymptoms() {
     const symptoms = document.getElementById("symptomInput").value;
 
     if (symptoms === "") {
         return
     }
 
+    document.getElementById("loadingSpinner").classList.remove("d-none");
+
     const requestData = {
         symptoms: symptoms
     };
 
-    fetch('/account/assistant/message', {
+    await fetch('/account/assistant/message', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -192,7 +194,9 @@ function submitSymptoms() {
             else {
                 diagnosisList.innerHTML += "<br><br>" + "<b>Вы</b><br>" + symptoms + "<br><b>Ассистент</b>" + htmlCode
             }
+            document.getElementById("symptomInput").value = ""
 
         })
         .catch(error => console.error('Ошибка при отправке запроса:', error));
+    document.getElementById("loadingSpinner").classList.add("d-none");
 }

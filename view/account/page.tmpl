@@ -36,9 +36,11 @@
         <div class="inp mb-3">
           <label for="symptomInput" class="form-label" style="font-size: large;">Введите симптомы:</label>
           <div class="input-group mb-3">
-
             <input type="text" class="form-control" id="symptomInput">
             <button class="btn btn-primary" type="button" onclick="submitSymptoms()">Отправить</button>
+            <div id="loadingSpinner" class="spinner-border text-primary d-none rounded-circle" role="status" style="margin-left: 10px">
+              <span class="visually-hidden">Loading...</span>
+            </div>
           </div>
         </div>
 

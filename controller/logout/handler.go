@@ -10,7 +10,7 @@ import (
 	"webApp/model"
 )
 
-func Handler(res http.ResponseWriter, req *http.Request) {
+func ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	id := req.URL.Query().Get("user")
 
 	userFound := model.User{}

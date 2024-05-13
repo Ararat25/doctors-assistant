@@ -40,17 +40,16 @@ func main() {
 	r.Group(func(r chi.Router) {
 		r.Use(authMiddleware.CheckToken)
 		r.Get("/account/user", account.Page)
-		r.Method(http.MethodPost, "/account/assistant/message", assistantHandler)
+		r.Post("/account/assistant/message", assistantHandler.ServeHTTP)
 	})
 
-	r.Method(http.MethodPost, "/login/user", loginHandler)
-	r.Method(http.MethodPost, "/register/user", registerHandler)
-	r.Method(http.MethodGet, "/refresh-token", refreshTokenHandler)
-
+	r.Post("/login/user", loginHandler.ServeHTTP)
+	r.Post("/register/user", registerHandler.ServeHTTP)
+	r.Get("/refresh-token", refreshTokenHandler.ServeHTTP)
 	r.Get("/main", basic.Page)
 	r.Get("/login", login.Page)
 	r.Get("/register", register.Page)
-	r.Get("/logout", logout.Handler)
+	r.Get("/logout", logout.ServeHTTP)
 
 	fileServer := http.FileServer(http.Dir("./view/staticFiles"))
 	r.Handle("/static/*", http.StripPrefix("/static", fileServer))
