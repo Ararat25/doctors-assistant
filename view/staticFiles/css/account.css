@@ -78,7 +78,7 @@ html, body {
 }
 
 #diagnosisList {
-    height: 250px;
+    height: 280px;
     border: 1px solid #000;
     overflow: auto;
     padding: 10px;

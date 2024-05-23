@@ -11,21 +11,21 @@
     <body>
     <main class="form-signin">
         <div class="container mt-5">
-            <h1 class="text-center mb-4"><b>My App</b> - Регистрация</h1>
+            <h1 class="text-center mb-4"><b></b>Регистрация</h1>
             <form class="text-center" id = "registerForm">
                 <div class="row mb-3">
                     <div class="col">
-                        <input type="text" class="form-control" placeholder="Имя" name="firstName" id="firstName">
+                        <input type="text" class="form-control" placeholder="Имя" name="firstName" id="firstName" required>
                     </div>
                     <div class="col">
-                        <input type="text" class="form-control" placeholder="Фамилия" name="lastName" id="lastName">
+                        <input type="text" class="form-control" placeholder="Фамилия" name="lastName" id="lastName" required>
                     </div>
                     <div class="col">
-                        <input type="text" class="form-control" placeholder="Отчество" name="middleName" id="middleName">
+                        <input type="text" class="form-control" placeholder="Отчество" name="middleName" id="middleName" required>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <input type="text" class="form-control" name="specialty" id="specialty" list="specialties" placeholder="Специальность">
+                    <input type="text" class="form-control" name="specialty" id="specialty" list="specialties" placeholder="Специальность" required>
                     <datalist id="specialties">
                         <option value="Терапевт">
                         <option value="Хирург">
@@ -35,10 +35,19 @@
                     </datalist>
                 </div>
                 <div class="mb-3">
-                    <input type="email" class="form-control" name="email" id="username" placeholder="Email">
+                    <input type="email" class="form-control" name="email" id="username" placeholder="Email" required>
                 </div>
                 <div class="mb-3">
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Пароль">
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Пароль" required>
+                    <div class="invalid-feedback">
+                        Password must be at least 8 characters long, contain an uppercase letter, a lowercase letter, a number, and a special character.
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Повторите пароль" required>
+                    <div class="invalid-feedback">
+                        Passwords must match.
+                    </div>
                 </div>
                 <div id = "status" style="padding-bottom: 10px"></div>
                 <button type="submit" class="btn btn-primary" onclick="register()">Зарегистрироваться</button>
