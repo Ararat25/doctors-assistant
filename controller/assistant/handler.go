@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/paulrzcz/go-gigachat"
 	"gorm.io/gorm"
 	"net/http"
@@ -78,8 +77,6 @@ func (h *Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 			}
 		}
 	}
-
-	fmt.Println(*client.ExpiresAt)
 
 	msg := []gigachat.Message{
 		{

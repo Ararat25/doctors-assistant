@@ -6,15 +6,24 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"webApp/custom_errors"
-	"webApp/initializers"
 	"webApp/model"
 )
 
-func ServeHTTP(res http.ResponseWriter, req *http.Request) {
+type Handler struct {
+	authService *model.Service
+}
+
+func NewHandler(authService *model.Service) *Handler {
+	return &Handler{
+		authService: authService,
+	}
+}
+
+func (h *Handler) ServeHTTP(res http.ResponseWriter, req *http.Request) {
 	id := req.URL.Query().Get("user")
 
 	userFound := model.User{}
-	result := initializers.DB.Where(&model.User{Id: id}).First(&userFound)
+	result := h.authService.Storage.Where(&model.User{Id: id}).First(&userFound)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		res.Header().Set("Content-Type", "application/json")
 		res.WriteHeader(http.StatusUnauthorized)
@@ -28,7 +37,7 @@ func ServeHTTP(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	_ = initializers.DB.Model(&model.User{}).Where(&model.User{Id: userFound.Id}).Update("accessTokenID", "")
+	_ = h.authService.Storage.Model(&model.User{}).Where(&model.User{Id: userFound.Id}).Update("accessTokenID", "")
 
 	accessTokenCookie := http.Cookie{
 		Name:     "accessToken",

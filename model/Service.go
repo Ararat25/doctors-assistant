@@ -10,7 +10,6 @@ import (
 	"gorm.io/gorm"
 	"time"
 	"webApp/custom_errors"
-	"webApp/initializers"
 	"webApp/model/entity"
 )
 
@@ -22,14 +21,14 @@ type Service struct {
 	Storage         *gorm.DB
 }
 
-func NewAuthService(passwordSalt, tokenSalt []byte) *Service {
+func NewAuthService(passwordSalt, tokenSalt []byte, storage *gorm.DB) *Service {
 	return &Service{
 		passwordSalt:    passwordSalt,
 		tokenSalt:       tokenSalt,
 		accessTokenTTL:  time.Minute * 30,
 		refreshTokenTTL: 24 * time.Hour,
 		//refreshTokenTTL: time.Second * 15,
-		Storage: initializers.DB,
+		Storage: storage,
 	}
 }
 
@@ -61,17 +60,17 @@ func (s *Service) AuthUser(email, password string) (string, entity.Tokens, error
 
 	result := s.Storage.Where(User{Email: email}).First(&userFound)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return "-1", entity.Tokens{}, custom_errors.ErrNotFound
+		return "", entity.Tokens{}, custom_errors.ErrNotFound
 	}
 
 	isPasswordCorrect := s.doPasswordsMatch(userFound.Password, password)
 	if !isPasswordCorrect {
-		return "-1", entity.Tokens{}, custom_errors.ErrIncorrectPassword
+		return "", entity.Tokens{}, custom_errors.ErrIncorrectPassword
 	}
 
 	tokens, err := s.generateTokens(email)
 	if err != nil {
-		return "-1", tokens, err
+		return "", tokens, err
 	}
 
 	return userFound.Id, tokens, nil
@@ -114,7 +113,7 @@ func (s *Service) RefreshToken(token string) (entity.Tokens, error) {
 	// поиск токена в хранилище
 	userFound := User{}
 
-	result := initializers.DB.Where(&User{Email: claims.Email, AccessTokenID: claims.AccessTokenID}).First(&userFound)
+	result := s.Storage.Where(&User{Email: claims.Email, AccessTokenID: claims.AccessTokenID}).First(&userFound)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return entity.Tokens{}, custom_errors.ErrNotFound
 	}

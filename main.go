@@ -26,10 +26,11 @@ func init() {
 func main() {
 	r := chi.NewRouter()
 
-	authService := model.NewAuthService([]byte(os.Getenv("AUTH_SALT")), []byte(os.Getenv("TOKEN_SALT")))
+	authService := model.NewAuthService([]byte(os.Getenv("AUTH_SALT")), []byte(os.Getenv("TOKEN_SALT")), initializers.DB)
 	authMiddleware := myMiddleware.NewAuthMiddleware(authService)
 
 	loginHandler := login.NewHandler(authService)
+	logoutHandler := logout.NewHandler(authService)
 	registerHandler := register.NewHandler(authService)
 	refreshTokenHandler := refreshToken.NewHandler(authService)
 	assistantHandler := assistant.NewHandler(authService)
@@ -46,15 +47,15 @@ func main() {
 	r.Post("/login/user", loginHandler.ServeHTTP)
 	r.Post("/register/user", registerHandler.ServeHTTP)
 	r.Get("/refresh-token", refreshTokenHandler.ServeHTTP)
+	r.Get("/logout", logoutHandler.ServeHTTP)
 	r.Get("/main", basic.Page)
 	r.Get("/login", login.Page)
 	r.Get("/register", register.Page)
-	r.Get("/logout", logout.ServeHTTP)
 
 	fileServer := http.FileServer(http.Dir("./view/staticFiles"))
 	r.Handle("/static/*", http.StripPrefix("/static", fileServer))
 
-	err := http.ListenAndServe(":5500", r)
+	err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("SERVER_PORT")), r)
 	if err != nil {
 		fmt.Printf("Ошибка запуска сервера: %s\n", err.Error())
 		return

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"html/template"
-	"log"
 	"net/http"
 	"webApp/custom_errors"
 	"webApp/initializers"
@@ -58,14 +57,12 @@ func (a *AuthMiddleware) CheckToken(h http.Handler) http.Handler {
 
 			ts, err := template.ParseFiles("./view/error/notAvailable.tmpl")
 			if err != nil {
-				log.Println(err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
 			err = ts.Execute(w, nil)
 			if err != nil {
-				log.Println(err.Error())
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
